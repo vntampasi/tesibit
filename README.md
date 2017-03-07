@@ -1,6 +1,6 @@
 # Tesibit
 
-© 2014 Alfresco Software, Inc. All Rights Reserved. See license.txt.
+© 2017 Tesibit, Inc. All Rights Reserved. See license.txt.
 
 The goal of this new project is to provide examples on how to extend Alfresco with the Alfresco Maven SDK.
 
