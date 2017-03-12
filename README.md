@@ -10,7 +10,7 @@ A web server to run any of java, C# or Node.js.
 
 ## Communication Protocol
 
-The communication can be done through AMQP, MQTT, HTTPS protocols
+The communication can be done through AMQP, MQTT, HTTPS protocols. By default, the Create method creates a DeviceClient instance that uses the AMQP protocol to communicate with IoT Hub. To use the MQTT or HTTP protocol, use the override of the Create method that enables you to specify the protocol.
 
 ## Set authentication key
 ```
@@ -43,7 +43,7 @@ To send your data to Tesibit you should import the library and call the function
 
 Import Devices.Client;
 
-deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey("device_name", deviceKey));
+deviceClient = DeviceClient.Create(new DeviceAuthenticationWithRegistrySymmetricKey("device_name", deviceKey));
 SendData();
 .
 .
@@ -89,6 +89,8 @@ SendData();
         }
 ```
 ## Receive Commands
+
+To receive commands from Tesibit you should import the library and simply call the function from your web service.
 ```C#
 
 Import Devices.Client;
