@@ -1,50 +1,53 @@
 # Tesibit
 
-© 2017 Tesibit, Inc. All Rights Reserved. See license.txt.
+© 2017 Tesibit, Inc. All Rights Reserved.
 
-The goal of this new project is to provide examples on how to extend Alfresco with the Alfresco Maven SDK.
+The goal of this is to make clear how to connect with Tesibit's platform in order to send data and receive commands for your application.
 
 ## Prerequisites
 
-A web server to run any of java, C# or Node.js
-If you are new to Alfresco and the Alfresco Maven SDK, you should start by reading [Jeff Potts' tutorial on the subject](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html).
+A web server to run any of java, C# or Node.js.
 
-# Running the examples
+## Communication Protocol
 
-All examples are selfcontained with the Alfresco Maven SDK, so you'll be able to get up and running quickly. This means that the only thing you will need is JDK and Maven. The SDK will allow you to start up an embedded Tomcat server with an embedded H2 database, so you will be up and running in no time.
+The communication can be done through AMQP, MQTT, HTTPS protocols
 
-Some examples ties into both Alfresco and Share. In those cases there will be an AMP module for each `repo` will be for the repository tier (Alfresco) and `share` will be for Share.
+## Set authentication key
+```
+string deviceKey = "authentication key";
+```
+## JSON Schema
 
-## Running Alfresco AMP examples (repo)
+Send the data as JSON format according to following schema
 
-To run the Alfreco AMP examples you enter the `repo` folder and run the "run.sh" script. Alternatively you will need to adjust the JVM memory settings. This is not needed for Share. Enter the `repo` folder and run the following command:
+```JSON
+{
+	"sensors": [
+		{
+			"sensor": "air",
+			"value": 9.59782450534302
+		},
+		{
+			"sensor": "power",
+			"value": 709.9300515884208
+		}
+	]
+}
 
-	export MAVEN_OPTS="-Xms1024m -Xmx4096m -XX:PermSize=1024m"
-	mvn integration-test -P amp-to-war
+```
+## Send Data
 
-Alfresco will be available on [http://localhost:8080/alfresco](http://localhost:8080/alfresco)
-
-## Running Share AMP examples (share)
-
-To run Share AMP examples you run enter the `share` folder and run the "run.sh" script. Alternatively you run this command:
-
-	mvn integration-test -P amp-to-war
-	
-Share will be available on [http://localhost:8081/alfresco](http://localhost:8081/alfresco) (notice that the port is 8081).
-
-## Send data
-
-To send your data to tesibit you should implement the following code to your web service
+To send your data to Tesibit you should import the library to your web service  to  implement the following code to your web service
 
 ```C#
-	private static async void SendDeviceToCloudMessagesAsync()
+	private static async void SendData()
     {
-        double avgWindSpeed = 10; // m/s
-        Random rand = new Random();
+        double WindSpeed = 10;
+        
 
         while (true)
         {
-            double currentWindSpeed = avgWindSpeed + rand.NextDouble() * 4 - 2;
+            
 
             var telemetryDataPoint = new
             {
