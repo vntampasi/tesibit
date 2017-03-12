@@ -18,7 +18,7 @@ string deviceKey = "authentication key";
 ```
 ## JSON Schema
 
-Send the data as JSON format according to following schema
+Send the data as JSON format according to the following schema
 
 ```JSON
 {
@@ -37,59 +37,79 @@ Send the data as JSON format according to following schema
 ```
 ## Send Data
 
-To send your data to Tesibit you should import the library to your web service  to  implement the following code to your web service
+To send your data to Tesibit you should import the library and call the function from your web service.
 
 ```C#
+
+Import Devices.Client;
+
+deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey("device_name", deviceKey));
+SendData();
+.
+.
+.
+
 	private static async void SendData()
     {
-        double WindSpeed = 10;
-        
-
-        while (true)
-        {
+     {
+            double WindSpeedValue = "speed data to send" // m/s
+            double PowerValue = "Power data to send"//KW
             
 
-            var telemetryDataPoint = new
+            while (true)
             {
-                deviceId = "myFirstDevice",
-                windSpeed = currentWindSpeed
-            };
-            var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
-            string levelValue;
+               
 
-            if (rand.NextDouble() > 0.7)
-            {
-                messageString = "This is a critical message";
-                levelValue = "critical";
+                var telemetryDataPoint = new
+
+                {
+                    
+                    sensors = new sensorPoint[]
+                    {
+                        new sensorPoint {sensor="air",value=WindSpeedValue },
+                        new sensorPoint {sensor="power",value=PowerValue }
+
+
+                    },
+                    
+                    
+                };
+
+                //convert data to json
+		var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
+                var message = new Message(Encoding.ASCII.GetBytes(messageString));
+                
+                await deviceClient.SendEventAsync(message);
+                
+
+               //send data every 1000 milliseconds
+               Task.Delay(1000).Wait();
+                
             }
-            else
-            {
-                levelValue = "normal";
-            }
-
-            var message = new Message(Encoding.ASCII.GetBytes(messageString));
-            message.Properties.Add("level", levelValue);
-
-            await deviceClient.SendEventAsync(message);
-            Console.WriteLine("{0} > Sent message: {1}", DateTime.Now, messageString);
-
-            await Task.Delay(1000);
         }
-    }
 ```
 ## Receive Commands
 ```C#
-	private static async Task ReceiveMessagesFromDeviceAsync(string partition, CancellationToken ct)
- {
-     var eventHubReceiver = eventHubClient.GetDefaultConsumerGroup().CreateReceiver(partition, DateTime.UtcNow);
-     while (true)
-     {
-         if (ct.IsCancellationRequested) break;
-         EventData eventData = await eventHubReceiver.ReceiveAsync();
-         if (eventData == null) continue;
 
-         string data = Encoding.UTF8.GetString(eventData.GetBytes());
-         Console.WriteLine("Message received. Partition: {0} Data: '{1}'", partition, data);
-     }
- }
+Import Devices.Client;
+
+
+ReceiveCommands();
+
+.
+.
+.
+
+
+	private static async void ReceiveCommands()
+        {
+            
+            while (true)
+            {
+                Message receivedMessage = await deviceClient.ReceiveAsync();
+                if (receivedMessage == null) continue;                
+                Byte command = receivedMessage.GetBytes();
+                await deviceClient.CompleteAsync(receivedMessage);
+            }
+        }
 ```
